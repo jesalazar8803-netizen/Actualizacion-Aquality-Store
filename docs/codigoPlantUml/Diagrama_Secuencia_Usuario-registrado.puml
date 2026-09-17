@@ -1,0 +1,88 @@
+@startuml
+title Aquality Store - Secuencia Usuario Registrado
+
+actor "Usuario Registrado" as User
+boundary "Frontend" as Frontend
+control "AuthController" as Auth
+control "ProductController" as Products
+control "CartController" as Cart
+control "OrderController" as Orders
+control "PaymentController" as Payments
+control "OrderService" as OrderService
+control "EmailService" as Email
+database "Database" as DB
+actor "Pasarela de Pago" as Gateway
+
+== Autenticación ==
+
+User -> Frontend: Iniciar sesión
+Frontend -> Auth: POST /api/auth/login
+Auth -> DB: Buscar usuario
+DB --> Auth: Usuario
+Auth --> Frontend: Token de autenticación
+Frontend --> User: Sesión iniciada
+
+== Catálogo ==
+
+User -> Frontend: Abrir catálogo
+Frontend -> Products: GET /api/products
+Products -> DB: Consultar productos
+DB --> Products: Productos
+Products --> Frontend: JSON
+Frontend --> User: Mostrar catálogo
+
+== Carrito ==
+
+User -> Frontend: Agregar producto
+Frontend -> Cart: POST /api/cart/items
+Cart -> DB: Guardar CartItem
+DB --> Cart: Confirmación
+Cart --> Frontend: Carrito actualizado
+
+== Compra ==
+
+User -> Frontend: Confirmar compra
+Frontend -> Orders: POST /api/orders
+
+Orders -> OrderService: crearPedido()
+OrderService -> DB: Crear Order
+OrderService -> DB: Crear OrderItems
+DB --> OrderService: Pedido creado
+
+OrderService --> Orders: Pedido pendiente
+Orders --> Frontend: Datos del pedido
+
+== Pago ==
+
+User -> Frontend: Seleccionar método de pago
+
+alt Pago online
+
+    Frontend -> Payments: POST /api/payments
+    Payments -> Gateway: Crear transacción
+    Gateway --> Payments: Resultado del pago
+    Payments --> Frontend: Estado del pago
+
+else Transferencia bancaria
+
+    Frontend -> Payments: Registrar método
+    Payments -> DB: Guardar Payment
+    DB --> Payments: Confirmación
+
+else Contraentrega
+
+    Frontend -> Payments: Registrar método
+    Payments -> DB: Guardar Payment
+    DB --> Payments: Confirmación
+
+end
+
+== Confirmación ==
+
+OrderService -> DB: Actualizar estado pedido
+OrderService -> Email: enviarConfirmacion()
+Email --> User: Correo de confirmación
+
+Frontend --> User: Compra realizada
+
+@enduml

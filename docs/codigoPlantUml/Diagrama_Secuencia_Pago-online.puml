@@ -1,0 +1,46 @@
+@startuml
+title Aquality Store - Pago Online
+
+actor "Cliente" as Customer
+boundary "Frontend" as Frontend
+control "PaymentController" as Controller
+control "PaymentService" as Service
+control "OrderService" as OrderService
+database "Database" as DB
+actor "Pasarela de Pago" as Gateway
+
+Customer -> Frontend: Selecciona "Pago online"
+
+Frontend -> Controller: POST /api/payments
+
+Controller -> Service: iniciarPago(orderId)
+
+Service -> DB: Consultar pedido
+DB --> Service: Pedido
+
+Service -> Gateway: Crear transacción
+Gateway --> Service: URL / referencia de pago
+
+Service -> DB: Guardar Payment(PENDING)
+
+Controller --> Frontend: Datos de pago
+
+Frontend --> Customer: Redirigir a pasarela
+
+Customer -> Gateway: Realizar pago
+
+Gateway --> Service: Webhook / resultado
+
+Service -> DB: Actualizar Payment
+
+alt Pago exitoso
+    Service -> OrderService: confirmarPedido()
+    OrderService -> DB: Estado = CONFIRMED
+else Pago rechazado
+    Service -> OrderService: cancelar/pendiente()
+    OrderService -> DB: Estado = PAYMENT_FAILED
+end
+
+Service --> Gateway: HTTP 200
+
+@enduml

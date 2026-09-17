@@ -1,0 +1,36 @@
+@startuml
+title Aquality Store - Visitante
+
+left to right direction
+
+actor "Usuario Anónimo" as Anonymous
+
+rectangle "Aquality Store" {
+
+    usecase "Registrarse" as Register
+    usecase "Iniciar sesión" as Login
+    usecase "Recuperar contraseña" as ResetPassword
+
+    usecase "Ver productos" as Products
+    usecase "Ver artículo\nen detalle" as Detail
+
+    usecase "Agregar al carrito" as AddCart
+    usecase "Contactar" as Contact
+}
+
+Anonymous --> Register
+Anonymous --> Login
+Anonymous --> ResetPassword
+Anonymous --> Products
+Anonymous --> Detail
+Anonymous --> AddCart
+Anonymous --> Contact
+
+note right of AddCart
+El visitante puede explorar
+y agregar productos al carrito.
+La compra requiere
+autenticación.
+end note
+
+@enduml

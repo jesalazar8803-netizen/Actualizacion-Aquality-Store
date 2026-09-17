@@ -1,0 +1,44 @@
+@startuml
+title Aquality Store - Recuperación de Contraseña
+
+actor Usuario
+boundary Frontend
+control AuthController
+control PasswordResetService
+control EmailService
+database Database
+
+Usuario -> Frontend: Selecciona "Olvidé mi contraseña"
+
+Frontend -> AuthController: POST /api/auth/forgot-password
+
+AuthController -> PasswordResetService: solicitarRecuperacion(email)
+
+PasswordResetService -> Database: Buscar usuario
+Database --> PasswordResetService: Usuario
+
+PasswordResetService -> PasswordResetService: Generar token
+PasswordResetService -> Database: Guardar token
+
+PasswordResetService -> EmailService: Enviar enlace
+EmailService --> Usuario: Correo de recuperación
+
+Usuario -> Frontend: Abre enlace
+
+Frontend -> AuthController: POST /api/auth/reset-password
+
+AuthController -> PasswordResetService: validarToken()
+
+PasswordResetService -> Database: Consultar token
+Database --> PasswordResetService: Token válido
+
+PasswordResetService -> PasswordResetService: Hashear nueva contraseña
+PasswordResetService -> Database: Actualizar contraseña
+PasswordResetService -> Database: Marcar token como usado
+
+PasswordResetService --> AuthController: Contraseña actualizada
+AuthController --> Frontend: Éxito
+
+Frontend --> Usuario: Contraseña cambiada
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+title Aquality Store - Secuencia Visitante
+
+actor "Usuario Anónimo" as User
+boundary "Frontend" as Frontend
+control "ProductController" as ProductController
+control "ProductService" as ProductService
+database "Database" as DB
+control "CartController" as CartController
+control "CartService" as CartService
+
+User -> Frontend: Accede a Productos
+Frontend -> ProductController: GET /api/products
+
+ProductController -> ProductService: obtenerProductos()
+ProductService -> DB: SELECT productos
+DB --> ProductService: Lista de productos
+ProductService --> ProductController: Productos
+ProductController --> Frontend: JSON
+Frontend --> User: Muestra productos
+
+User -> Frontend: Selecciona producto
+Frontend -> ProductController: GET /api/products/{id}
+
+ProductController -> ProductService: obtenerProducto(id)
+ProductService -> DB: Buscar producto
+DB --> ProductService: Producto
+ProductService --> ProductController: Producto
+ProductController --> Frontend: JSON
+Frontend --> User: Muestra detalle
+
+User -> Frontend: Agregar al carrito
+Frontend -> CartController: POST /api/cart/items
+
+CartController -> CartService: agregarProducto()
+CartService -> DB: Guardar carrito/item
+DB --> CartService: Confirmación
+CartService --> CartController: Carrito actualizado
+CartController --> Frontend: JSON
+Frontend --> User: Producto agregado
+
+note over User,Frontend
+El visitante puede explorar y
+agregar productos al carrito.
+La confirmación de compra
+requiere autenticación.
+end note
+
+@enduml

@@ -1,0 +1,174 @@
+@startuml
+title Aquality Store 2026 - Modelo Entidad Relación
+
+hide circle
+skinparam linetype ortho
+
+entity roles {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(50) <<UK>>
+    description : VARCHAR(255)
+}
+
+entity users {
+    * id : BIGINT <<PK>>
+    --
+    first_name : VARCHAR(100)
+    last_name : VARCHAR(100)
+    phone : VARCHAR(30)
+    * email : VARCHAR(150) <<UK>>
+    address : VARCHAR(255)
+    * username : VARCHAR(100) <<UK>>
+    password_hash : VARCHAR(255)
+    enabled : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    --
+    role_id : BIGINT <<FK>>
+}
+
+entity categories {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100) <<UK>>
+    description : TEXT
+    active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity products {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(150)
+    description : TEXT
+    image_url : VARCHAR(500)
+    price : DECIMAL(12,2)
+    stock : INT
+    active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+    --
+    category_id : BIGINT <<FK>>
+}
+
+entity carts {
+    * id : BIGINT <<PK>>
+    --
+    user_id : BIGINT <<FK, UK>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity cart_items {
+    * id : BIGINT <<PK>>
+    --
+    cart_id : BIGINT <<FK>>
+    product_id : BIGINT <<FK>>
+    quantity : INT
+    unit_price : DECIMAL(12,2)
+    --
+    UNIQUE(cart_id, product_id)
+}
+
+entity orders {
+    * id : BIGINT <<PK>>
+    --
+    * order_number : VARCHAR(50) <<UK>>
+    user_id : BIGINT <<FK>>
+    order_date : TIMESTAMP
+    status : VARCHAR(30)
+    subtotal : DECIMAL(12,2)
+    tax : DECIMAL(12,2)
+    total : DECIMAL(12,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity order_items {
+    * id : BIGINT <<PK>>
+    --
+    order_id : BIGINT <<FK>>
+    product_id : BIGINT <<FK>>
+    quantity : INT
+    unit_price : DECIMAL(12,2)
+    subtotal : DECIMAL(12,2)
+}
+
+entity payments {
+    * id : BIGINT <<PK>>
+    --
+    order_id : BIGINT <<FK, UK>>
+    transaction_id : VARCHAR(150)
+    method : VARCHAR(30)
+    status : VARCHAR(30)
+    amount : DECIMAL(12,2)
+    paid_at : TIMESTAMP
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity invoices {
+    * id : BIGINT <<PK>>
+    --
+    * invoice_number : VARCHAR(50) <<UK>>
+    order_id : BIGINT <<FK, UK>>
+    issue_date : TIMESTAMP
+    subtotal : DECIMAL(12,2)
+    tax : DECIMAL(12,2)
+    total : DECIMAL(12,2)
+    status : VARCHAR(30)
+    created_at : TIMESTAMP
+}
+
+entity contact_messages {
+    * id : BIGINT <<PK>>
+    --
+    name : VARCHAR(100)
+    email : VARCHAR(150)
+    subject : VARCHAR(200)
+    message : TEXT
+    status : VARCHAR(30)
+    created_at : TIMESTAMP
+    read_at : TIMESTAMP
+    replied_at : TIMESTAMP
+}
+
+entity password_reset_tokens {
+    * id : BIGINT <<PK>>
+    --
+    user_id : BIGINT <<FK>>
+    token : VARCHAR(255) <<UK>>
+    expires_at : TIMESTAMP
+    used : BOOLEAN
+    created_at : TIMESTAMP
+}
+
+' =========================
+' RELACIONES
+' =========================
+
+roles ||--o{ users : "has"
+
+users ||--o| carts : "owns"
+
+users ||--o{ orders : "places"
+
+users ||--o{ password_reset_tokens : "requests"
+
+categories ||--o{ products : "contains"
+
+carts ||--o{ cart_items : "contains"
+
+products ||--o{ cart_items : "appears in"
+
+orders ||--|{ order_items : "contains"
+
+products ||--o{ order_items : "sold as"
+
+orders ||--o| payments : "has"
+
+orders ||--o| invoices : "generates"
+
+@enduml

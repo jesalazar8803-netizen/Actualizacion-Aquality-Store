@@ -1,0 +1,67 @@
+@startuml
+title Aquality Store - Arquitectura
+
+skinparam componentStyle rectangle
+
+actor "Usuario" as User
+actor "Administrador" as Admin
+
+package "Frontend" {
+    component "HTML5" as HTML
+    component "CSS3" as CSS
+    component "JavaScript" as JS
+}
+
+package "Backend - Spring Boot" {
+
+    component "REST API" as API
+
+    component "Spring Security" as Security
+
+    component "Product Module" as Products
+    component "Cart Module" as Cart
+    component "Order Module" as Orders
+    component "Payment Module" as Payments
+    component "User Module" as Users
+    component "Contact Module" as Contact
+    component "Report Module" as Reports
+    component "Email Module" as Email
+}
+
+database "MySQL / PostgreSQL" as DB
+
+cloud "Payment Gateway" as Gateway
+cloud "SMTP / Email Provider" as SMTP
+
+User --> HTML
+Admin --> HTML
+
+HTML --> JS
+JS --> API
+
+API --> Security
+
+API --> Products
+API --> Cart
+API --> Orders
+API --> Payments
+API --> Users
+API --> Contact
+API --> Reports
+
+Products --> DB
+Cart --> DB
+Orders --> DB
+Payments --> DB
+Users --> DB
+Contact --> DB
+Reports --> DB
+
+Payments --> Gateway
+Email --> SMTP
+
+Orders --> Email
+Contact --> Email
+Users --> Email
+
+@enduml

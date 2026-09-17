@@ -1,0 +1,152 @@
+@startuml
+title Aquality Store - Diagrama de Clases
+
+skinparam classAttributeIconSize 0
+
+enum RoleName {
+    ADMIN
+    CUSTOMER
+}
+
+enum OrderStatus {
+    PENDING
+    CONFIRMED
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+}
+
+enum PaymentMethod {
+    BANK_TRANSFER
+    CASH_ON_DELIVERY
+    ONLINE
+}
+
+enum PaymentStatus {
+    PENDING
+    AUTHORIZED
+    PAID
+    FAILED
+    CANCELLED
+    REFUNDED
+}
+
+enum ContactStatus {
+    NEW
+    READ
+    REPLIED
+    ARCHIVED
+}
+
+class Role {
+    - id: Long
+    - name: RoleName
+}
+
+class User {
+    - id: Long
+    - firstName: String
+    - lastName: String
+    - phone: String
+    - email: String
+    - address: String
+    - username: String
+    - passwordHash: String
+    - enabled: Boolean
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+}
+
+class Category {
+    - id: Long
+    - name: String
+    - description: String
+    - active: Boolean
+}
+
+class Product {
+    - id: Long
+    - name: String
+    - description: String
+    - imageUrl: String
+    - price: BigDecimal
+    - stock: Integer
+    - active: Boolean
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+}
+
+class Cart {
+    - id: Long
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+}
+
+class CartItem {
+    - id: Long
+    - quantity: Integer
+    - unitPrice: BigDecimal
+}
+
+class Order {
+    - id: Long
+    - orderNumber: String
+    - orderDate: LocalDateTime
+    - status: OrderStatus
+    - total: BigDecimal
+}
+
+class OrderItem {
+    - id: Long
+    - quantity: Integer
+    - unitPrice: BigDecimal
+    - subtotal: BigDecimal
+}
+
+class Payment {
+    - id: Long
+    - transactionId: String
+    - amount: BigDecimal
+    - method: PaymentMethod
+    - status: PaymentStatus
+    - paidAt: LocalDateTime
+}
+
+class ContactMessage {
+    - id: Long
+    - name: String
+    - email: String
+    - subject: String
+    - message: String
+    - status: ContactStatus
+    - createdAt: LocalDateTime
+    - repliedAt: LocalDateTime
+}
+
+class PasswordResetToken {
+    - id: Long
+    - token: String
+    - expiresAt: LocalDateTime
+    - used: Boolean
+}
+
+Role "1" -- "0..*" User
+User "1" -- "0..*" Order
+User "1" -- "0..1" Cart
+User "1" -- "0..*" PasswordResetToken
+
+Category "1" -- "0..*" Product
+
+Cart "1" *-- "1..*" CartItem
+CartItem "*" --> "1" Product
+
+Order "1" *-- "1..*" OrderItem
+OrderItem "*" --> "1" Product
+
+Order "1" -- "1" Payment
+Order "*" --> "1" User
+
+User "0..1" --> "0..*" ContactMessage : sends
+
+@enduml

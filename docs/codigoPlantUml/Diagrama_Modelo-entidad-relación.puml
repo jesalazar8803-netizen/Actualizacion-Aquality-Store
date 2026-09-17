@@ -1,0 +1,132 @@
+@startuml
+title Aquality Store - Modelo Entidad Relación
+
+entity roles {
+    * id BIGINT <<PK>>
+    --
+    name VARCHAR(50)
+}
+
+entity users {
+    * id BIGINT <<PK>>
+    --
+    first_name VARCHAR(100)
+    last_name VARCHAR(100)
+    phone VARCHAR(30)
+    email VARCHAR(150) <<UK>>
+    address VARCHAR(255)
+    username VARCHAR(100) <<UK>>
+    password_hash VARCHAR(255)
+    enabled BOOLEAN
+    role_id BIGINT <<FK>>
+    created_at DATETIME
+    updated_at DATETIME
+}
+
+entity categories {
+    * id BIGINT <<PK>>
+    --
+    name VARCHAR(100)
+    description TEXT
+    active BOOLEAN
+}
+
+entity products {
+    * id BIGINT <<PK>>
+    --
+    name VARCHAR(150)
+    description TEXT
+    image_url VARCHAR(500)
+    price DECIMAL(12,2)
+    stock INT
+    active BOOLEAN
+    category_id BIGINT <<FK>>
+    created_at DATETIME
+    updated_at DATETIME
+}
+
+entity carts {
+    * id BIGINT <<PK>>
+    --
+    user_id BIGINT <<FK>>
+    created_at DATETIME
+    updated_at DATETIME
+}
+
+entity cart_items {
+    * id BIGINT <<PK>>
+    --
+    cart_id BIGINT <<FK>>
+    product_id BIGINT <<FK>>
+    quantity INT
+    unit_price DECIMAL(12,2)
+}
+
+entity orders {
+    * id BIGINT <<PK>>
+    --
+    order_number VARCHAR(50) <<UK>>
+    user_id BIGINT <<FK>>
+    order_date DATETIME
+    status VARCHAR(30)
+    total DECIMAL(12,2)
+}
+
+entity order_items {
+    * id BIGINT <<PK>>
+    --
+    order_id BIGINT <<FK>>
+    product_id BIGINT <<FK>>
+    quantity INT
+    unit_price DECIMAL(12,2)
+    subtotal DECIMAL(12,2)
+}
+
+entity payments {
+    * id BIGINT <<PK>>
+    --
+    order_id BIGINT <<FK>>
+    transaction_id VARCHAR(150)
+    amount DECIMAL(12,2)
+    method VARCHAR(30)
+    status VARCHAR(30)
+    paid_at DATETIME
+}
+
+entity contact_messages {
+    * id BIGINT <<PK>>
+    --
+    name VARCHAR(100)
+    email VARCHAR(150)
+    subject VARCHAR(200)
+    message TEXT
+    status VARCHAR(30)
+    created_at DATETIME
+    replied_at DATETIME
+}
+
+entity password_reset_tokens {
+    * id BIGINT <<PK>>
+    --
+    user_id BIGINT <<FK>>
+    token VARCHAR(255)
+    expires_at DATETIME
+    used BOOLEAN
+}
+
+roles ||--o{ users
+categories ||--o{ products
+
+users ||--o| carts
+carts ||--o{ cart_items
+products ||--o{ cart_items
+
+users ||--o{ orders
+orders ||--|{ order_items
+products ||--o{ order_items
+
+orders ||--|| payments
+
+users ||--o{ password_reset_tokens
+
+@enduml

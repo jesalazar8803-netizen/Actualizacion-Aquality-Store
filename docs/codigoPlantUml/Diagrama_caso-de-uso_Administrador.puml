@@ -1,0 +1,63 @@
+@startuml
+title Aquality Store - Administrador
+
+left to right direction
+
+actor "Administrador" as Admin
+
+rectangle "Aquality Store" {
+
+    usecase "Iniciar sesión" as Login
+
+    usecase "Gestionar productos" as Products
+    usecase "Agregar producto" as AddProduct
+    usecase "Modificar producto" as EditProduct
+    usecase "Eliminar producto" as DeleteProduct
+
+    usecase "Gestionar clientes" as Users
+    usecase "Consultar clientes" as ConsultUsers
+    usecase "Crear cliente" as CreateUser
+    usecase "Modificar cliente" as EditUser
+    usecase "Eliminar cliente" as DeleteUser
+
+    usecase "Gestionar pedidos" as Orders
+    usecase "Consultar pedidos" as ConsultOrders
+    usecase "Consultar detalle\nde pedido" as OrderDetail
+    usecase "Generar PDF\nde pedido" as OrderPDF
+
+    usecase "Gestionar mensajes\nde contacto" as Contacts
+    usecase "Consultar mensaje" as ViewContact
+    usecase "Marcar mensaje\ncomo leído" as ReadContact
+    usecase "Responder mensaje" as ReplyContact
+    usecase "Archivar mensaje" as ArchiveContact
+
+    usecase "Generar reportes" as Reports
+}
+
+Admin --> Login
+
+Admin --> Products
+Admin --> Users
+Admin --> Orders
+Admin --> Contacts
+Admin --> Reports
+
+Products .> AddProduct : <<include>>
+Products .> EditProduct : <<include>>
+Products .> DeleteProduct : <<include>>
+
+Users .> ConsultUsers : <<include>>
+Users .> CreateUser : <<include>>
+Users .> EditUser : <<include>>
+Users .> DeleteUser : <<include>>
+
+Orders .> ConsultOrders : <<include>>
+Orders .> OrderDetail : <<include>>
+Orders .> OrderPDF : <<include>>
+
+Contacts .> ViewContact : <<include>>
+Contacts .> ReadContact : <<include>>
+Contacts .> ReplyContact : <<include>>
+Contacts .> ArchiveContact : <<include>>
+
+@enduml

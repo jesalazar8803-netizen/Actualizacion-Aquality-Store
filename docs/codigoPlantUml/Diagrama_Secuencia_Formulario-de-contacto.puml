@@ -1,0 +1,44 @@
+@startuml
+title Aquality Store - Formulario de Contacto
+
+actor "Visitante" as Visitor
+boundary "Frontend" as Frontend
+control "ContactController" as Controller
+control "ContactService" as Service
+database "Database" as DB
+control "EmailService" as Email
+actor "Administrador" as Admin
+
+Visitor -> Frontend: Diligencia formulario
+Visitor -> Frontend: Nombre, correo, asunto y mensaje
+
+Frontend -> Controller: POST /api/contact
+
+Controller -> Controller: Validar datos
+
+Controller -> Service: guardarMensaje()
+
+Service -> DB: INSERT ContactMessage
+DB --> Service: Mensaje guardado
+
+Service -> Email: notificarAdministrador()
+
+Email --> Admin: Nuevo mensaje de contacto
+
+Service --> Controller: Mensaje registrado
+Controller --> Frontend: 201 Created
+
+Frontend --> Visitor: Mensaje enviado correctamente
+
+== Gestión administrativa ==
+
+Admin -> Frontend: Abrir mensajes
+Frontend -> Controller: GET /api/admin/contacts
+Controller -> DB: Consultar mensajes
+DB --> Controller: Mensajes
+Controller --> Frontend: Lista de mensajes
+
+Admin -> Frontend: Abrir mensaje
+Admin -> Frontend: Marcar como leído
+
+@enduml
